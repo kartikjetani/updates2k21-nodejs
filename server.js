@@ -7,13 +7,13 @@ const cors = require("cors");
 const { MongoClient, } = require('mongodb');
 const bodyParser = require("body-parser");
 const auth = require("./middleware/auth");
-const bcrypt  = require('bcrypt');
+const bcrypt = require('bcrypt');
 app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
 
 app.use(cors({
-  origin: ['http://127.0.0.1:5500', "http://localhost:3000", "http://localhost:3001","https://updates2k21.co.in"]
+  origin: ['http://127.0.0.1:5500', "http://localhost:3000", "http://localhost:3001", "https://updates2k21.co.in"]
 }));
 
 
@@ -41,26 +41,15 @@ client.connect(err => {
     }
 
 
-    // if (user.password === req.body.password) {
-    //   const token = jwt.sign(
-    //     { enrollment: user.enrollment },
-    //     process.env.TOKEN_KEY
-    //   );
-
-    //   res.send({ message: "LOGIN_SUCCESSFUL", token ,enrollment :user.enrollment})
-    // } else {
-    //   res.send({ message: "INVALID_PASSWORD" })
-    // }
-
     bcrypt.compare(req.body.password, user.password, function (err, result) {
       // console.log(result);
       if (result) {
         const token = jwt.sign(
-          { user_id: user.profile_id, mail: req.body.mail, category: user.category },
+          { enrollment: user.enrollment },
           process.env.TOKEN_KEY
         );
 
-        res.send({ message: "LOGIN_SUCCESSFUL", token })
+        res.send({ message: "LOGIN_SUCCESSFUL", token, enrollment: user.enrollment })
       } else {
         res.send({ message: "INVALID_PASSWORD" })
       }
@@ -104,6 +93,7 @@ client.connect(err => {
     console.log(req.body);
     const participants_collection = client.db("Registrations").collection("Participants");
 
+    console.log(req.user.enrollment);
 
     let result = await participants_collection.findOne({
       enrollment: req.user.enrollment
