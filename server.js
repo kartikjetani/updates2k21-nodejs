@@ -2,7 +2,7 @@ const express = require('express');
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 const cors = require("cors");
 const { MongoClient, } = require('mongodb');
 const bodyParser = require("body-parser");
@@ -173,5 +173,5 @@ client.connect(err => {
 });//end client.connect();
 
 app.listen(PORT, () => {
-  console.log("server is running on port " + 5000);
+  console.log("server is running on port " + PORT);
 })
