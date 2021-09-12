@@ -34,7 +34,6 @@ client.connect(err => {
       enrollment: req.body.enrollment
     })
 
-    console.log(req.body);
     if (!user) {
       res.send({ message: "USER_NOT_EXIST" })
       return
@@ -100,10 +99,10 @@ client.connect(err => {
     });
 
     if (!result) {
-      res.send({ message: "USER_NOT_EXIST" })
+      res.send({ message: "USER_NOT_EXIST",desc:req.user.enrollment+ " enrollment not exist in our database." })
       return
     } else if (result.participation.includes(req.body.eventname)) {
-      res.send({ message: "ALREADY_REGISTERED" })
+      res.send({ message: "ALREADY_REGISTERED",desc:req.user.enrollment+ " has already registered in this event." })
       return
     }
 
@@ -133,7 +132,7 @@ client.connect(err => {
     )
 
     console.log(req.user.enrollment);
-    res.send({ desc: "Registered in " + req.body.eventname, message: "SUCCESS" });
+    res.send({ desc: "Registration successfull in " + req.body.eventname, message: "SUCCESS" });
   });
 
 
