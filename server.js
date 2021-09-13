@@ -81,7 +81,8 @@ client.connect(err => {
       shift: req.body.shift,
       phoneno: req.body.phoneno,
       personalid: req.body.personalid,
-      participation: []
+      participation: [],
+      time: new Date().toLocaleString(undefined, { timeZone: 'Asia/Kolkata' })
     })
     res.send({ message: "SUCCESS", success: true });
   })
@@ -99,14 +100,34 @@ client.connect(err => {
     });
 
     if (!result) {
-      res.send({ message: "USER_NOT_EXIST",desc:req.user.enrollment+ " enrollment not exist in our database." })
+      res.send({ message: "USER_NOT_EXIST", desc: req.user.enrollment + " enrollment not exist in our database." })
       return
     } else if (result.participation.includes(req.body.eventname)) {
-      res.send({ message: "ALREADY_REGISTERED",desc:req.user.enrollment+ " has already registered in this event." })
+      res.send({ message: "ALREADY_REGISTERED", desc: req.user.enrollment + " has already registered in this event." })
       return
     }
 
     let members = req.body.members || [];
+
+    for (let i = 0; i < members.length; i++) {
+      const element = members[i];
+
+      const collection = client.db("Registrations").collection("Participants");
+      let result = await collection.findOne({
+        enrollment: element
+      })
+
+      let eventname = req.body.eventname || "";
+
+      if (!result) {
+        res.send({ message: "USER_NOT_EXIST" ,desc:element +" not found in our database. so tell them to signup first."});
+        return;
+      } else if (result.participation.includes(eventname)) {
+        res.status(200).send({ message: "ALREADY_REGISTERED", desc: result.firstname + " has already registered in this event." });
+        return;
+      }
+
+    }
 
     let membersdoc = await participants_collection.find({ 'enrollment': { $in: members } }).toArray()
       .catch(e => {
